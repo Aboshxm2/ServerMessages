@@ -1,4 +1,4 @@
-# CustomMessages
+# ServerMessages
 A simple plugin that will allow you to customize server messages.
 ## How to use
 1. Put the plugin inside the `plugins` folder.
