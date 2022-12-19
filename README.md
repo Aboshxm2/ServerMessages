@@ -23,3 +23,5 @@ kill:
   enable: true
   message: "&cThe player &e{player} &cwas has been killed by the player &c{killer}"
 ```
+## Credits
+The plugin icon made by [Jonny Studio](https://www.flaticon.com/authors/jonny-studio) from www.flaticon.com
