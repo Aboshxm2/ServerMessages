@@ -1,0 +1,6 @@
+name: CustomMessages
+version: 1.0.0
+author: Aboshxm2
+api: 4.0.0
+src-namespace-prefix: Aboshxm2\CustomMessages
+main: Aboshxm2\CustomMessages\Main

@@ -1,0 +1,15 @@
+join:
+  enable: true
+  message: "&a+ {player}"
+
+quit:
+  enable: true
+  message: "&c- {player}"
+
+death:
+  enable: true
+  message: "&cThe player &e{player} &cdied."
+
+kill:
+  enable: true
+  message: "&cThe player &e{player} &cwas has been killed by the player &c{killer}"
