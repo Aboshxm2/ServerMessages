@@ -12,4 +12,4 @@ death:
 
 kill:
   enable: true
-  message: "&cThe player &e{player} &cwas has been killed by the player &c{killer}"
+  message: "&cThe player &e{player} &chas been killed by the player &e{killer}"
