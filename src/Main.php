@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Aboshxm2\CustomMessages;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
@@ -15,9 +16,39 @@ use pocketmine\utils\TextFormat;
 
 class Main extends PluginBase implements Listener
 {
+    public array $lastHits = [];
+
     protected function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
+
+    /**
+     * @priority MONITOR
+     */
+    public function onHit(EntityDamageByEntityEvent $event): void
+    {
+        $player = $event->getEntity();
+        $damager = $event->getDamager();
+
+        if(!$player instanceof Player or !$damager instanceof Player) return;
+
+        $this->lastHits[$player->getName()] = $damager->getName();
+    }
+
+    /**
+     * @priority MONITOR
+     */
+    public function onRegain(EntityRegainHealthEvent $event): void
+    {
+        $player = $event->getEntity();
+        if(!$player instanceof Player) return;
+
+        if(($event->getAmount() + $player->getHealth()) >= 20) {
+            if(isset($this->lastHits[$player->getName()])) {
+                unset($this->lastHits[$player->getName()]);
+            }
+        }
     }
 
     /**
@@ -45,6 +76,10 @@ class Main extends PluginBase implements Listener
 
         $player = $event->getPlayer();
 
+        if(isset($this->lastHits[$player->getName()])) {
+            unset($this->lastHits[$player->getName()]);
+        }
+
         $message = TextFormat::colorize($this->getConfig()->getNested("quit.message"));
 
         $message = str_replace("{player}", $player->getName(), $message);
@@ -58,16 +93,18 @@ class Main extends PluginBase implements Listener
     {
         $player = $event->getPlayer();
 
-        $lastDamageCause = $player->getLastDamageCause();
+        if(isset($this->lastHits[$player->getName()])) {
+            $damagerName = $this->lastHits[$player->getName()];
 
-        if($lastDamageCause instanceof EntityDamageByEntityEvent and ($killer = $lastDamageCause->getDamager()) instanceof Player) {
             if(!$this->getConfig()->getNested("kill.enable")) return;
 
             $message = TextFormat::colorize($this->getConfig()->getNested("kill.message"));
 
-            $message = str_replace(["{player}", "{killer}"], [$player->getName(), $killer->getName()], $message);
+            $message = str_replace(["{player}", "{killer}"], [$player->getName(), $damagerName], $message);
 
             $event->setDeathMessage($message);
+
+            unset($this->lastHits[$player->getName()]);
         }else {
             if(!$this->getConfig()->getNested("death.enable")) return;
 
